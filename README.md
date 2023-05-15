@@ -1,1 +1,1 @@
-# DCS Web Editor microservice template
+# Testing repo for Briefing Editor
