@@ -1,40 +1,40 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
-import { darkTheme } from "naive-ui";
-import type { GlobalTheme, GlobalThemeOverrides } from "naive-ui";
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { darkTheme } from 'naive-ui'
+import type { GlobalTheme, GlobalThemeOverrides } from 'naive-ui'
 
-const theme = ref<GlobalTheme>(darkTheme);
-const selectedTheme = ref("Dark");
+const theme = ref<GlobalTheme>(darkTheme)
+const selectedTheme = ref('Dark')
 const themeOverrides: GlobalThemeOverrides = {
   common: {
-    bodyColor: "#23313f",
-    cardColor: "#293949",
-    railColor: "#555",
-    primaryColorSuppl: "#fff",
-  },
-};
+    bodyColor: '#23313f',
+    cardColor: '#293949',
+    railColor: '#555',
+    primaryColorSuppl: '#fff'
+  }
+}
 
-export const useThemeStore = defineStore("theme", {
+export const useThemeStore = defineStore('theme', {
   state: () => ({
-    theme: darkTheme,
+    theme: darkTheme
   }),
   actions: {
-    setTheme(newTheme: GlobalTheme) {
-      theme.value = newTheme;
+    setTheme (newTheme: GlobalTheme) {
+      theme.value = newTheme
     },
-    setThemeOverrides(newThemeOverrides: GlobalThemeOverrides) {
-      themeOverrides.common = newThemeOverrides.common;
-    },
+    setThemeOverrides (newThemeOverrides: GlobalThemeOverrides) {
+      themeOverrides.common = newThemeOverrides.common
+    }
   },
   getters: {
-    getTheme() {
-      return theme.value;
+    getTheme () {
+      return theme.value
     },
-    getThemeOverrides() {
-      return themeOverrides;
+    getThemeOverrides () {
+      return themeOverrides
     },
-    getSelectedTheme() {
-      return selectedTheme.value;
-    },
-  },
-});
+    getSelectedTheme () {
+      return selectedTheme.value
+    }
+  }
+})
