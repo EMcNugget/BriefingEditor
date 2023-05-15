@@ -1,5 +1,7 @@
+<!-- Replace all inputs in prod with translated input from dcs-web-editor -->
+
 <template>
-  <div class="m-5 flex flex-col w-1/3">
+  <div class="flex flex-col full w-full">
     <n-input placeholder="Enter a sortie name" class="mb-14" />
     <n-grid :x-gap="12" :y-gap="50" :cols="1">
       <n-grid-item>
