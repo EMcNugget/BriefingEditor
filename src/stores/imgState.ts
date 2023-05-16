@@ -10,5 +10,15 @@ export default defineStore("bf", {
   state: () => ({
     briefing: defaultBriefing,
   }),
-  // State is keys, the set should set the value of the key, everything but images are static keys
+  actions: {
+    setBluePictures(keys: string[]) {
+      this.briefing.pictureFileNameB = keys
+    },
+    setNeutralPictures(keys: string[]) {
+      this.briefing.pictureFileNameN = keys
+    },
+    setRedPictures(keys: string[]) {
+      this.briefing.pictureFileNameR = keys
+    },
+  }
 });

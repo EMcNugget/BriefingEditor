@@ -4,9 +4,14 @@ export interface IBriefingImages {
   pictureFileNameR: string[];
 }
 
-export interface IMapResource {
+export interface IMapResourceInit {
   id: string;
   name: string;
+}
+
+
+export interface IMapResourceFinal {
+  [key: string]: string;
 }
 
 export interface IBriefing {

@@ -32,6 +32,7 @@
 
 <script setup lang="ts">
 import { Ref, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useMapRescStore } from "../stores/mapResourceState";
 import {
   type UploadFileInfo,
   NUpload,
@@ -39,6 +40,8 @@ import {
   NTabPane,
   UploadCustomRequestOptions,
 } from "naive-ui";
+
+const map = useMapRescStore();
 
 let id = 6;
 
@@ -55,8 +58,14 @@ const customRequest = (
     const dataUrl = reader.result;
     const id = changeId();
     file.id = id;
-    localStorage.setItem(file.id, dataUrl as string);
+    const file_data = {
+      name: file.name,
+      url: dataUrl as string,
+    };
+    localStorage.setItem(file.id, JSON.stringify(file_data));
+    window.dispatchEvent(new Event("localStorageChange"));
     // console.log("File uploaded: ", file.id);
+    // console.log("File name: ", file.name);
     previewFile.value = [
       {
         id: file.id,
@@ -105,37 +114,26 @@ const customRequestNeutral = (options: UploadCustomRequestOptions) => {
   customRequest(options, previewFileListNeutral);
 };
 
-/**
-* Use Array.map map file.id and file.name to an object where
-* file.id is the key and file.name is the value. Still working
-* out a way on how to differentiate between coaltions.
-*/
-
-
 const previewFileListRed = ref<UploadFileInfo[]>([]);
 const previewFileListBlue = ref<UploadFileInfo[]>([]);
 const previewFileListNeutral = ref<UploadFileInfo[]>([]);
 
-watch(
-  localStorage,
-  () => {
-    const keys = Object.keys(localStorage);
-    previewFileListRed.value = keys
-      .filter((key) => key.includes("ResKey_ImageBriefing_"))
-      .map((key) => {
-        return {
-          id: key,
-          name: key,
-          status: "finished",
-          url: localStorage.getItem(key) as string,
-        };
-      });
-  },
-  { immediate: true }
-);
-
 onMounted(() => {
   localStorage.clear();
+  window.addEventListener("localStorageChange", () => {
+    const keys = Object.keys(localStorage);
+    keys
+      .filter((key) => key.includes("ResKey_ImageBriefing_"))
+      .map((key) => {
+        const data = JSON.parse(localStorage.getItem(key));
+        return {
+          id: key,
+          name: data.name,
+          status: "finished",
+          url: data.url,
+        };
+      });
+  });
 });
 
 onBeforeUnmount(() => {
