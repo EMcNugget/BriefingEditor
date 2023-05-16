@@ -1,11 +1,7 @@
 import { IMapResourceInit, IMapResourceFinal } from "../types";
 import { defineStore } from "pinia";
 
-const defaultMapResource: IMapResourceFinal = {
-  ResKey_ImageBriefing_6: "placeholder.png",
-  ResKey_ImageBriefing_7: "placeholder.png",
-  ResKey_ImageBriefing_8: "placeholder.png",
-};
+const defaultMapResource: IMapResourceFinal = {};
 
 export const useMapRescStore = defineStore("map", {
   state: () => ({
@@ -17,6 +13,9 @@ export const useMapRescStore = defineStore("map", {
         accumulator[current.id] = current.name;
         return accumulator;
       }, {});
+    },
+    getAll() {
+      return this.map;
     },
   },
 });

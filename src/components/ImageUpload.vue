@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { Ref, onBeforeUnmount, onMounted, ref } from "vue";
 import { useMapRescStore } from "../stores/mapResourceState";
 import {
   type UploadFileInfo,
@@ -64,8 +64,6 @@ const customRequest = (
     };
     localStorage.setItem(file.id, JSON.stringify(file_data));
     window.dispatchEvent(new Event("localStorageChange"));
-    // console.log("File uploaded: ", file.id);
-    // console.log("File name: ", file.name);
     previewFile.value = [
       {
         id: file.id,
@@ -84,9 +82,7 @@ const onRemove = (data: {
   file: UploadFileInfo;
   fileList: UploadFileInfo[];
 }) => {
-  // console.log("Removing file: ", data.file.id);
   localStorage.removeItem(data.file.id);
-  // console.log("localStorage after removal: ", localStorage);
 
   previewFileListRed.value = previewFileListRed.value.filter(
     (file) => file.id !== data.file.id
@@ -119,13 +115,18 @@ const previewFileListBlue = ref<UploadFileInfo[]>([]);
 const previewFileListNeutral = ref<UploadFileInfo[]>([]);
 
 onMounted(() => {
-  localStorage.clear();
+  const data = Object.keys(localStorage);
+  data
+    .filter((key) => key.includes("ResKey_ImageBriefing_"))
+    .forEach((key) => localStorage.removeItem(key));
+
   window.addEventListener("localStorageChange", () => {
-    const keys = Object.keys(localStorage);
-    keys
+    const data = Object.keys(localStorage)
       .filter((key) => key.includes("ResKey_ImageBriefing_"))
       .map((key) => {
-        const data = JSON.parse(localStorage.getItem(key));
+        const data = JSON.parse(
+          localStorage.getItem(key) ?? "'name: None', 'url: None'"
+        );
         return {
           id: key,
           name: data.name,
@@ -133,10 +134,13 @@ onMounted(() => {
           url: data.url,
         };
       });
+    map.setAll(data);
   });
 });
 
 onBeforeUnmount(() => {
-  localStorage.clear();
+  Object.keys(localStorage)
+    .filter((key) => key.includes("ResKey_ImageBriefing_"))
+    .forEach((key) => localStorage.removeItem(key));
 });
 </script>
