@@ -1,5 +1,3 @@
-<!-- Replace Mocky.io/v2/... with prod upload  -->
-
 <template>
   <n-tabs>
     <n-tab-pane name="blue" tab="Blue">
@@ -106,6 +104,13 @@ const customRequestBlue = (options: UploadCustomRequestOptions) => {
 const customRequestNeutral = (options: UploadCustomRequestOptions) => {
   customRequest(options, previewFileListNeutral);
 };
+
+/**
+* Use Array.map map file.id and file.name to an object where
+* file.id is the key and file.name is the value. Still working
+* out a way on how to differentiate between coaltions.
+*/
+
 
 const previewFileListRed = ref<UploadFileInfo[]>([]);
 const previewFileListBlue = ref<UploadFileInfo[]>([]);
