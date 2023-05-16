@@ -4,42 +4,136 @@
   <n-tabs>
     <n-tab-pane name="blue" tab="Blue">
       <n-upload
-        action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
         accept=".png, .jpeg, .jpg"
         :default-file-list="previewFileListBlue"
         list-type="image-card"
+        :custom-request="customRequestBlue"
+        :on-remove="onRemove"
       />
-      <img :src="previewImageUrlBlue" style="width: 100%" />
     </n-tab-pane>
     <n-tab-pane name="neutral" tab="Neutral">
       <n-upload
-        action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
         accept=".png, .jpeg, .jpg"
         :default-file-list="previewFileListNeutral"
         list-type="image-card"
+        :custom-request="customRequestNeutral"
+        :on-remove="onRemove"
       />
-      <img :src="previewImageUrlNeutral" style="width: 100%" />
     </n-tab-pane>
     <n-tab-pane name="red" tab="Red">
       <n-upload
-        action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
         accept=".png, .jpeg, .jpg"
         :default-file-list="previewFileListRed"
         list-type="image-card"
+        :custom-request="customRequestRed"
+        :on-remove="onRemove"
       />
-      <img :src="previewImageUrlRed" style="width: 100%" />
     </n-tab-pane>
   </n-tabs>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { type UploadFileInfo, NUpload, NTabs, NTabPane } from "naive-ui";
+import { Ref, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import {
+  type UploadFileInfo,
+  NUpload,
+  NTabs,
+  NTabPane,
+  UploadCustomRequestOptions,
+} from "naive-ui";
 
-const previewImageUrlRed = ref("");
+let id = 6;
+
+const changeId = () => {
+  return `ResKey_ImageBriefing_${id++}`;
+};
+
+const customRequest = (
+  { file, onFinish }: UploadCustomRequestOptions,
+  previewFile: Ref<UploadFileInfo[]>
+) => {
+  const reader = new FileReader();
+  reader.onloadend = function () {
+    const dataUrl = reader.result;
+    const id = changeId();
+    file.id = id;
+    localStorage.setItem(file.id, dataUrl as string);
+    // console.log("File uploaded: ", file.id);
+    previewFile.value = [
+      {
+        id: file.id,
+        name: file.name,
+        status: "finished",
+        url: dataUrl as string,
+      },
+      ...previewFile.value,
+    ];
+    onFinish();
+  };
+  reader.readAsDataURL(file.file as Blob);
+};
+
+const onRemove = (data: {
+  file: UploadFileInfo;
+  fileList: UploadFileInfo[];
+}) => {
+  // console.log("Removing file: ", data.file.id);
+  localStorage.removeItem(data.file.id);
+  // console.log("localStorage after removal: ", localStorage);
+
+  previewFileListRed.value = previewFileListRed.value.filter(
+    (file) => file.id !== data.file.id
+  );
+
+  previewFileListBlue.value = previewFileListBlue.value.filter(
+    (file) => file.id !== data.file.id
+  );
+
+  previewFileListNeutral.value = previewFileListNeutral.value.filter(
+    (file) => file.id !== data.file.id
+  );
+  return true;
+};
+
+const customRequestRed = (options: UploadCustomRequestOptions) => {
+  customRequest(options, previewFileListRed);
+};
+
+const customRequestBlue = (options: UploadCustomRequestOptions) => {
+  customRequest(options, previewFileListBlue);
+};
+
+const customRequestNeutral = (options: UploadCustomRequestOptions) => {
+  customRequest(options, previewFileListNeutral);
+};
+
 const previewFileListRed = ref<UploadFileInfo[]>([]);
-const previewImageUrlBlue = ref("");
 const previewFileListBlue = ref<UploadFileInfo[]>([]);
-const previewImageUrlNeutral = ref("");
 const previewFileListNeutral = ref<UploadFileInfo[]>([]);
+
+watch(
+  localStorage,
+  () => {
+    const keys = Object.keys(localStorage);
+    previewFileListRed.value = keys
+      .filter((key) => key.includes("ResKey_ImageBriefing_"))
+      .map((key) => {
+        return {
+          id: key,
+          name: key,
+          status: "finished",
+          url: localStorage.getItem(key) as string,
+        };
+      });
+  },
+  { immediate: true }
+);
+
+onMounted(() => {
+  localStorage.clear();
+});
+
+onBeforeUnmount(() => {
+  localStorage.clear();
+});
 </script>

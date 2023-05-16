@@ -1,12 +1,7 @@
 import { defineStore } from "pinia";
-import IBriefing from "../types";
+import { IBriefingImages } from "../types";
 
-const defaultBriefing: IBriefing = {
-  sortie: "DictKey_sortie_5",
-  descriptionBlueTask: "DictKey_descriptionBlueTask_3",
-  descriptionNeutralsTask: "DictKey_descriptionNeutralsTask_4",
-  descriptionRedTask: "DictKey_descriptionRedTask_2",
-  descriptionText: "DictKey_descriptionText_1",
+const defaultBriefing: IBriefingImages  = {
   pictureFileNameB: ["ResKey_ImageBriefing_6", "ResKey_ImageBriefing_7"],
   pictureFileNameN: ["ResKey_ImageBriefing_17", "ResKey_ImageBriefing_18"],
   pictureFileNameR: ["ResKey_ImageBriefing_14", "ResKey_ImageBriefing_15"],
