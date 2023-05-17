@@ -1,5 +1,5 @@
 <template>
-  <n-tabs>
+  <n-tabs type="segment">
     <n-tab-pane name="blue" tab="Blue">
       <n-upload
         accept=".png, .jpeg, .jpg"

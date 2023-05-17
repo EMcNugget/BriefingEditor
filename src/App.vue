@@ -3,9 +3,23 @@
     :theme="selectedTheme === 'Dark' ? theme : null"
     :theme-overrides="selectedTheme === 'Dark' ? themeOverrides : null"
   >
-    <div class="flex flex-row m-5">
-      <tasks-sortie class="pr-10"/>
-      <image-upload class="pl-10"/>
+    <div class="flex flex-row w-full text-xl mt-2 font-sans font-semibold pr-10">
+      <div
+        class="flex justify-center flex-col w-full h-full overflow-hidden pl-10"
+      >
+        <n-h3 class="border-b border-white border-solid border-1 mb-12">
+          Briefing
+        </n-h3>
+        <tasks-sortie />
+      </div>
+      <div
+        class="flex justify-center flex-col w-1/2 h-full overflow-hidden pl-8 pr-10 ml-8"
+      >
+        <n-h3 class="border-b border-white border-solid border-1 mb-12"
+          >Briefing Images</n-h3
+        >
+        <image-upload />
+      </div>
     </div>
   </n-config-provider>
 </template>
