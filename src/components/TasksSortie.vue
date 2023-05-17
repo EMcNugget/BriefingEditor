@@ -32,7 +32,6 @@
           type="textarea"
           placeholder="Red Coalition Tasks"
           :resizable="false"
-          f
         />
       </n-grid-item>
       <n-grid-item>
@@ -51,10 +50,13 @@
 
 <script setup lang="ts">
 import { NInput, NGrid, NGridItem, NH4 } from "naive-ui";
+import { useTxtState } from "../stores/txtState";
 import { ref } from "vue";
 
-const situation = ref("");
-const blueTasks = ref("");
-const redTasks = ref("");
-const neutralTasks = ref("");
+const txt = useTxtState();
+
+const situation = ref(txt.txt.descriptionText);
+const blueTasks = ref(txt.txt.descriptionBlueTask);
+const redTasks = ref(txt.txt.descriptionText);
+const neutralTasks = ref(txt.txt.descriptionNeutralsTask);
 </script>

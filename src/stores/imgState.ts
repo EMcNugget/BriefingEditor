@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { IBriefingImages } from "../types";
 
-const defaultBriefing: IBriefingImages  = {
+const defaultBriefing: IBriefingImages = {
   pictureFileNameB: [],
   pictureFileNameN: [],
   pictureFileNameR: [],
@@ -12,22 +12,22 @@ export const useImgStore = defineStore("bf", {
   }),
   actions: {
     setBluePictures(keys: string[]) {
-      this.briefing.pictureFileNameB = keys
+      this.briefing.pictureFileNameB = keys;
     },
     setNeutralPictures(keys: string[]) {
-      this.briefing.pictureFileNameN = keys
+      this.briefing.pictureFileNameN = keys;
     },
     setRedPictures(keys: string[]) {
-      this.briefing.pictureFileNameR = keys
+      this.briefing.pictureFileNameR = keys;
     },
     addBlue(key: string) {
-      this.briefing.pictureFileNameB.push(key)
+      this.briefing.pictureFileNameB.push(key);
     },
     addNetural(key: string) {
-      this.briefing.pictureFileNameN.push(key)
+      this.briefing.pictureFileNameN.push(key);
     },
     addRed(key: string) {
-      this.briefing.pictureFileNameR.push(key)
-    }
-  }
+      this.briefing.pictureFileNameR.push(key);
+    },
+  },
 });

@@ -34,6 +34,7 @@
 import { Ref, onBeforeUnmount, onMounted, ref } from "vue";
 import { useMapRescStore } from "../stores/mapResourceState";
 import { useImgStore } from "../stores/imgState";
+import { useTxtState } from "../stores/txtState";
 import {
   type UploadFileInfo,
   NUpload,
@@ -43,13 +44,16 @@ import {
 } from "naive-ui";
 import { IBriefingImages } from "../types";
 
+// TODO: Add max dict id
+
 const map = useMapRescStore();
 const img = useImgStore();
+const txt = useTxtState();
 
-let id = 6; // image id's start at 6, 1-5 are for descriptions
+let id_num = 6; // image id's start at 6, 1-5 are for descriptions
 
 const changeId = () => {
-  return `ResKey_ImageBriefing_${id++}`;
+  return `ResKey_ImageBriefing_${id_num++}`;
 };
 
 const placeholder: UploadFileInfo = {
@@ -109,6 +113,7 @@ const customRequest = (
   reader.onloadend = function () {
     const dataUrl = reader.result;
     const id = changeId();
+    txt.txt.maxDictId = id_num;
     file.id = id;
     const file_data = {
       name: file.name,
@@ -150,6 +155,8 @@ const onRemove = (data: {
   localStorage.removeItem(data.file.id);
   delete map.map[data.file.id];
   img.briefing = removeIdFromBriefingImages(img.briefing, data.file.id);
+
+  // refactor to watch state instead of manually filtering it
   previewFileListRed.value = previewFileListRed.value.filter(
     (file) => file.id !== data.file.id
   );
@@ -185,14 +192,6 @@ const previewFileListBlue = ref<UploadFileInfo[]>(
 const previewFileListNeutral = ref<UploadFileInfo[]>(
   findKeys(img.briefing.pictureFileNameN, Coalitions.neutral)
 );
-
-img.$subscribe(() => {
-  console.log(img.briefing);
-});
-
-map.$subscribe(() => {
-  console.log(map.getAll());
-});
 
 onMounted(() => {
   const data = Object.keys(localStorage);

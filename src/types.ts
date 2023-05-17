@@ -15,6 +15,7 @@ export interface IMapResourceFinal {
 }
 
 export interface IBriefing {
+  maxDictId: number;
   sortie: string;
   descriptionBlueTask: string;
   descriptionNeutralsTask: string;
