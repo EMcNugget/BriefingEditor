@@ -14,8 +14,11 @@ export const useMapRescStore = defineStore("map", {
         return accumulator;
       }, {});
     },
-    getAll() {
+    getAll(): IMapResourceFinal {
       return this.map;
+    },
+    setOne(key: string, value: string) {
+      this.map[key] = value;
     },
   },
 });

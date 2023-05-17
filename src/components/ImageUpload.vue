@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import { Ref, onBeforeUnmount, onMounted, ref } from "vue";
 import { useMapRescStore } from "../stores/mapResourceState";
+import { useImgStore } from "../stores/imgState";
 import {
   type UploadFileInfo,
   NUpload,
@@ -40,18 +41,69 @@ import {
   NTabPane,
   UploadCustomRequestOptions,
 } from "naive-ui";
+import { IBriefingImages } from "../types";
 
 const map = useMapRescStore();
+const img = useImgStore();
 
-let id = 6;
+let id = 6; // image id's start at 6, 1-5 are for descriptions
 
 const changeId = () => {
   return `ResKey_ImageBriefing_${id++}`;
 };
 
+const placeholder: UploadFileInfo = {
+  id: "none",
+  name: "none",
+  status: "finished",
+  url: "none",
+};
+
+enum Coalitions {
+  red = "red",
+  neutral = "neutral",
+  blue = "blue",
+}
+
+const setData = (key: string, name: string, coa: Coalitions) => {
+  map.setOne(key, name);
+  switch (coa) {
+    case Coalitions.blue:
+      img.addBlue(key);
+      break;
+    case Coalitions.neutral:
+      img.addNetural(key);
+      break;
+    case Coalitions.red:
+      img.addRed(key);
+      break;
+  }
+};
+
+const findKeys = (keys: string[], coa: Coalitions): UploadFileInfo[] => {
+  return keys
+    .filter((key) => key.includes("ResKey_ImageBriefing_"))
+    .map((key) => {
+      const item = localStorage.getItem(key);
+      if (item !== null) {
+        const data: UploadFileInfo = JSON.parse(item);
+        setData(key, data.name, coa);
+        return {
+          id: key,
+          name: data.name as string,
+          status: "finished",
+          url: data.url as string,
+        };
+      } else {
+        return placeholder;
+      }
+    });
+};
+
 const customRequest = (
   { file, onFinish }: UploadCustomRequestOptions,
-  previewFile: Ref<UploadFileInfo[]>
+  previewFile: Ref<UploadFileInfo[]>,
+  coa: Coalitions
 ) => {
   const reader = new FileReader();
   reader.onloadend = function () {
@@ -62,6 +114,7 @@ const customRequest = (
       name: file.name,
       url: dataUrl as string,
     };
+    setData(file.id, file.name, coa);
     localStorage.setItem(file.id, JSON.stringify(file_data));
     window.dispatchEvent(new Event("localStorageChange"));
     previewFile.value = [
@@ -78,12 +131,25 @@ const customRequest = (
   reader.readAsDataURL(file.file as Blob);
 };
 
+const removeIdFromBriefingImages = (
+  briefingImages: IBriefingImages,
+  id: string
+): IBriefingImages => {
+  for (let key in briefingImages) {
+    briefingImages[key as keyof IBriefingImages] = briefingImages[
+      key as keyof IBriefingImages
+    ].filter((value) => value !== id);
+  }
+  return briefingImages;
+};
+
 const onRemove = (data: {
   file: UploadFileInfo;
   fileList: UploadFileInfo[];
 }) => {
   localStorage.removeItem(data.file.id);
-
+  delete map.map[data.file.id];
+  img.briefing = removeIdFromBriefingImages(img.briefing, data.file.id);
   previewFileListRed.value = previewFileListRed.value.filter(
     (file) => file.id !== data.file.id
   );
@@ -99,20 +165,34 @@ const onRemove = (data: {
 };
 
 const customRequestRed = (options: UploadCustomRequestOptions) => {
-  customRequest(options, previewFileListRed);
+  customRequest(options, previewFileListRed, Coalitions.red);
 };
 
 const customRequestBlue = (options: UploadCustomRequestOptions) => {
-  customRequest(options, previewFileListBlue);
+  customRequest(options, previewFileListBlue, Coalitions.blue);
 };
 
 const customRequestNeutral = (options: UploadCustomRequestOptions) => {
-  customRequest(options, previewFileListNeutral);
+  customRequest(options, previewFileListNeutral, Coalitions.neutral);
 };
 
-const previewFileListRed = ref<UploadFileInfo[]>([]);
-const previewFileListBlue = ref<UploadFileInfo[]>([]);
-const previewFileListNeutral = ref<UploadFileInfo[]>([]);
+const previewFileListRed = ref<UploadFileInfo[]>(
+  findKeys(img.briefing.pictureFileNameR, Coalitions.red)
+);
+const previewFileListBlue = ref<UploadFileInfo[]>(
+  findKeys(img.briefing.pictureFileNameB, Coalitions.blue)
+);
+const previewFileListNeutral = ref<UploadFileInfo[]>(
+  findKeys(img.briefing.pictureFileNameN, Coalitions.neutral)
+);
+
+img.$subscribe(() => {
+  console.log(img.briefing);
+});
+
+map.$subscribe(() => {
+  console.log(map.getAll());
+});
 
 onMounted(() => {
   const data = Object.keys(localStorage);
@@ -124,9 +204,8 @@ onMounted(() => {
     const data = Object.keys(localStorage)
       .filter((key) => key.includes("ResKey_ImageBriefing_"))
       .map((key) => {
-        const data = JSON.parse(
-          localStorage.getItem(key) ?? "'name: None', 'url: None'"
-        );
+        const item = localStorage.getItem(key) ?? JSON.stringify(placeholder);
+        const data = JSON.parse(item);
         return {
           id: key,
           name: data.name,

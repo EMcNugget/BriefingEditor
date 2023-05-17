@@ -2,11 +2,11 @@ import { defineStore } from "pinia";
 import { IBriefingImages } from "../types";
 
 const defaultBriefing: IBriefingImages  = {
-  pictureFileNameB: ["ResKey_ImageBriefing_6", "ResKey_ImageBriefing_7"],
-  pictureFileNameN: ["ResKey_ImageBriefing_17", "ResKey_ImageBriefing_18"],
-  pictureFileNameR: ["ResKey_ImageBriefing_14", "ResKey_ImageBriefing_15"],
+  pictureFileNameB: [],
+  pictureFileNameN: [],
+  pictureFileNameR: [],
 };
-export default defineStore("bf", {
+export const useImgStore = defineStore("bf", {
   state: () => ({
     briefing: defaultBriefing,
   }),
@@ -20,5 +20,14 @@ export default defineStore("bf", {
     setRedPictures(keys: string[]) {
       this.briefing.pictureFileNameR = keys
     },
+    addBlue(key: string) {
+      this.briefing.pictureFileNameB.push(key)
+    },
+    addNetural(key: string) {
+      this.briefing.pictureFileNameN.push(key)
+    },
+    addRed(key: string) {
+      this.briefing.pictureFileNameR.push(key)
+    }
   }
 });
