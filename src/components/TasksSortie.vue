@@ -55,12 +55,41 @@
 <script setup lang="ts">
 import { NInput, NGrid, NGridItem, NH4 } from "naive-ui";
 import { useTxtState } from "../stores/txtState";
-import { ref } from "vue";
+import { computed } from "vue";
 
 const txt = useTxtState();
-const sortie = ref(txt.txt.DictKey_sortie_5);
-const situation = ref(txt.txt.DictKey_descriptionText_1);
-const blueTasks = ref(txt.txt.DictKey_descriptionBlueTask_3);
-const redTasks = ref(txt.txt.DictKey_descriptionRedTask_2);
-const neutralTasks = ref(txt.txt.DictKey_descriptionNeutralsTask_4);
+const sortie = computed({
+  get: () => txt.txt.DictKey_sortie_5,
+  set: (newValue) => {
+    txt.txt.DictKey_sortie_5 = newValue;
+  },
+});
+
+const situation = computed({
+  get: () => txt.txt.DictKey_descriptionText_1,
+  set: (newValue) => {
+    txt.txt.DictKey_descriptionText_1 = newValue;
+  },
+});
+
+const blueTasks = computed({
+  get: () => txt.txt.DictKey_descriptionBlueTask_3,
+  set: (newValue) => {
+    txt.txt.DictKey_descriptionBlueTask_3 = newValue;
+  },
+});
+
+const redTasks = computed({
+  get: () => txt.txt.DictKey_descriptionRedTask_2,
+  set: (newValue) => {
+    txt.txt.DictKey_descriptionRedTask_2 = newValue;
+  },
+});
+
+const neutralTasks = computed({
+  get: () => txt.txt.DictKey_descriptionNeutralsTask_4,
+  set: (newValue) => {
+    txt.txt.DictKey_descriptionNeutralsTask_4 = newValue;
+  },
+});
 </script>
