@@ -44,8 +44,6 @@ import {
 } from "naive-ui";
 import { IBriefingImages } from "../types";
 
-// TODO: Add max dict id
-
 const map = useMapRescStore();
 const img = useImgStore();
 const txt = useTxtState();

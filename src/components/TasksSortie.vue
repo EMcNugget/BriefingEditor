@@ -2,7 +2,11 @@
 
 <template>
   <div class="flex flex-col full w-full">
-    <n-input placeholder="Enter a sortie name" class="mb-14" />
+    <n-input
+      v-model:value="sortie"
+      placeholder="Enter a sortie name"
+      class="mb-14"
+    />
     <n-grid :x-gap="12" :y-gap="50" :cols="1">
       <n-grid-item>
         <n-h4>Situation</n-h4>
@@ -54,9 +58,9 @@ import { useTxtState } from "../stores/txtState";
 import { ref } from "vue";
 
 const txt = useTxtState();
-
-const situation = ref(txt.txt.descriptionText);
-const blueTasks = ref(txt.txt.descriptionBlueTask);
-const redTasks = ref(txt.txt.descriptionText);
-const neutralTasks = ref(txt.txt.descriptionNeutralsTask);
+const sortie = ref(txt.txt.DictKey_sortie_5);
+const situation = ref(txt.txt.DictKey_descriptionText_1);
+const blueTasks = ref(txt.txt.DictKey_descriptionBlueTask_3);
+const redTasks = ref(txt.txt.DictKey_descriptionRedTask_2);
+const neutralTasks = ref(txt.txt.DictKey_descriptionNeutralsTask_4);
 </script>
