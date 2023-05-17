@@ -192,11 +192,6 @@ const previewFileListNeutral = ref<UploadFileInfo[]>(
 );
 
 onMounted(() => {
-  const data = Object.keys(localStorage);
-  data
-    .filter((key) => key.includes("ResKey_ImageBriefing_"))
-    .forEach((key) => localStorage.removeItem(key));
-
   window.addEventListener("localStorageChange", () => {
     const data = Object.keys(localStorage)
       .filter((key) => key.includes("ResKey_ImageBriefing_"))
