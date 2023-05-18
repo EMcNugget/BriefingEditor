@@ -186,7 +186,6 @@ watch(
   () => previewFileListBlue.value,
   (value) => {
     img.briefing.pictureFileNameB = value.map((item) => item.id);
-    console.log(`blue: ${img.briefing.pictureFileNameB}`);
   }
 );
 
@@ -194,7 +193,6 @@ watch(
   () => previewFileListRed.value,
   (value) => {
     img.briefing.pictureFileNameR = value.map((item) => item.id);
-    console.log(`red: ${img.briefing.pictureFileNameR}`);
   }
 );
 
@@ -202,7 +200,6 @@ watch(
   () => previewFileListNeutral.value,
   (value) => {
     img.briefing.pictureFileNameN = value.map((item) => item.id);
-    console.log(`neutral: ${img.briefing.pictureFileNameN}`);
   }
 );
 </script>
