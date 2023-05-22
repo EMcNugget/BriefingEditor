@@ -9,4 +9,7 @@ app.use(pinia)
 
 app.mount('#app')
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
