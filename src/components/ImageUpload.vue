@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, ref, watch } from "vue";
+import { Ref, onMounted, ref, watch } from "vue";
 import { useMapRescStore } from "../stores/mapResourceState";
 import { useImgDataStore } from "../stores/imgDataState";
 import { useImgStore } from "../stores/imgState";
@@ -120,6 +120,7 @@ const customRequest = (
       url: dataUrl as string,
     };
     setData(file.id, file.name, coa);
+    localStorage.setItem(file.id, JSON.stringify(file_data));
     img_data.setOneImage(file.id, file_data);
     previewFile.value = [file_data, ...previewFile.value];
     onFinish();
@@ -204,9 +205,35 @@ watch(
   }
 );
 
-watch(img_data.img,
-  (val) => {
-    console.log(val);
+watch(img_data.getAllImage(), (val) => {
+  Object.keys(val).forEach((key) => {
+    if (img.briefing.pictureFileNameB.includes(key)) {
+      if (previewFileListBlue.value.some((item) => item.id === key)) {
+        return;
+      }
+      previewFileListBlue.value.push(val[key]);
+    }
+    if (img.briefing.pictureFileNameR.includes(key)) {
+      if (previewFileListRed.value.some((item) => item.id === key)) {
+        return;
+      }
+      previewFileListRed.value.push(val[key]);
+    }
+    if (img.briefing.pictureFileNameN.includes(key)) {
+      if (previewFileListNeutral.value.some((item) => item.id === key)) {
+        return;
+      }
+      previewFileListNeutral.value.push(val[key]);
+    }
+  });
+});
+
+onMounted(() => { // replace with data from fs later
+  const data = localStorage.getItem("ResKey_ImageBriefing_6");
+  if (data !== null) {
+    const parsedData = JSON.parse(data);
+    previewFileListBlue.value.push(parsedData);
+    img_data.setOneImage(parsedData.id, parsedData);
   }
-);
+});
 </script>
