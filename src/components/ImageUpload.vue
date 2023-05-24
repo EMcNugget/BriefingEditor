@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, onMounted, ref, watch } from "vue";
+import { computed } from "vue";
 import { useMapRescStore } from "../stores/mapResourceState";
 import { useImgDataStore } from "../stores/imgDataState";
 import { useImgStore } from "../stores/imgState";
@@ -53,6 +53,9 @@ const txt = useTxtState();
 let id_num = 6; // image id's start at 6, 1-5 are for descriptions
 
 const changeId = () => {
+  if (txt.txt.maxDictId > id_num) {
+    return `ResKey_ImageBriefing_${txt.txt.maxDictId}`;
+  }
   return `ResKey_ImageBriefing_${id_num++}`;
 };
 
@@ -84,12 +87,11 @@ const setData = (key: string, name: string, coa: Coalitions) => {
   }
 };
 
-const findKeys = (keys: string[], coa: Coalitions): UploadFileInfo[] => {
+const findKeys = (keys: string[]): UploadFileInfo[] => {
   return keys.map((key) => {
     const item = img_data.getOneImage(key);
     if (item !== null) {
       const data: UploadFileInfo = item;
-      setData(key, data.name, coa);
       return {
         id: key,
         name: data.name as string,
@@ -104,7 +106,6 @@ const findKeys = (keys: string[], coa: Coalitions): UploadFileInfo[] => {
 
 const customRequest = (
   { file, onFinish }: UploadCustomRequestOptions,
-  previewFile: Ref<UploadFileInfo[]>,
   coa: Coalitions
 ) => {
   const reader = new FileReader();
@@ -120,9 +121,7 @@ const customRequest = (
       url: dataUrl as string,
     };
     setData(file.id, file.name, coa);
-    localStorage.setItem(file.id, JSON.stringify(file_data));
     img_data.setOneImage(file.id, file_data);
-    previewFile.value = [file_data, ...previewFile.value];
     onFinish();
   };
   reader.readAsDataURL(file.file as Blob);
@@ -147,93 +146,30 @@ const onRemove = (data: {
   img_data.deleteOneImage(data.file.id);
   delete map.map[data.file.id];
   img.briefing = removeIdFromBriefingImages(img.briefing, data.file.id);
-
-  previewFileListRed.value = previewFileListRed.value.filter(
-    (file) => file.id !== data.file.id
-  );
-
-  previewFileListBlue.value = previewFileListBlue.value.filter(
-    (file) => file.id !== data.file.id
-  );
-
-  previewFileListNeutral.value = previewFileListNeutral.value.filter(
-    (file) => file.id !== data.file.id
-  );
   return true;
 };
 
 const customRequestRed = (options: UploadCustomRequestOptions) => {
-  customRequest(options, previewFileListRed, Coalitions.red);
+  customRequest(options, Coalitions.red);
 };
 
 const customRequestBlue = (options: UploadCustomRequestOptions) => {
-  customRequest(options, previewFileListBlue, Coalitions.blue);
+  customRequest(options, Coalitions.blue);
 };
 
 const customRequestNeutral = (options: UploadCustomRequestOptions) => {
-  customRequest(options, previewFileListNeutral, Coalitions.neutral);
+  customRequest(options, Coalitions.neutral);
 };
 
-const previewFileListRed = ref<UploadFileInfo[]>(
-  findKeys(img.briefing.pictureFileNameR, Coalitions.red)
-);
-const previewFileListBlue = ref<UploadFileInfo[]>(
-  findKeys(img.briefing.pictureFileNameB, Coalitions.blue)
-);
-const previewFileListNeutral = ref<UploadFileInfo[]>(
-  findKeys(img.briefing.pictureFileNameN, Coalitions.neutral)
+const previewFileListRed = computed(() =>
+  findKeys(img.briefing.pictureFileNameR)
 );
 
-watch(
-  () => previewFileListBlue.value,
-  (value) => {
-    img.briefing.pictureFileNameB = value.map((item) => item.id);
-  }
+const previewFileListBlue = computed(() =>
+  findKeys(img.briefing.pictureFileNameB)
 );
 
-watch(
-  () => previewFileListRed.value,
-  (value) => {
-    img.briefing.pictureFileNameR = value.map((item) => item.id);
-  }
+const previewFileListNeutral = computed(() =>
+  findKeys(img.briefing.pictureFileNameN)
 );
-
-watch(
-  () => previewFileListNeutral.value,
-  (value) => {
-    img.briefing.pictureFileNameN = value.map((item) => item.id);
-  }
-);
-
-watch(img_data.getAllImage(), (val) => {
-  Object.keys(val).forEach((key) => {
-    if (img.briefing.pictureFileNameB.includes(key)) {
-      if (previewFileListBlue.value.some((item) => item.id === key)) {
-        return;
-      }
-      previewFileListBlue.value.push(val[key]);
-    }
-    if (img.briefing.pictureFileNameR.includes(key)) {
-      if (previewFileListRed.value.some((item) => item.id === key)) {
-        return;
-      }
-      previewFileListRed.value.push(val[key]);
-    }
-    if (img.briefing.pictureFileNameN.includes(key)) {
-      if (previewFileListNeutral.value.some((item) => item.id === key)) {
-        return;
-      }
-      previewFileListNeutral.value.push(val[key]);
-    }
-  });
-});
-
-onMounted(() => { // replace with data from fs later
-  const data = localStorage.getItem("ResKey_ImageBriefing_6");
-  if (data !== null) {
-    const parsedData = JSON.parse(data);
-    previewFileListBlue.value.push(parsedData);
-    img_data.setOneImage(parsedData.id, parsedData);
-  }
-});
 </script>
